@@ -159,6 +159,8 @@ function dibujar() {
   main.replaceChildren();
   anchoDibujado = anchoDisponible();
   datos.lineas.forEach((_, i) => dibujarLinea(i, porLinea[i], anchoDibujado));
+  dibujarConos();
+  document.querySelectorAll(".pista").forEach(p => p.addEventListener("scroll", dibujarConos, { passive: true }));
   dibujarIndice();
   aplicarBusqueda();
 }
@@ -291,6 +293,45 @@ function dibujarLinea(i, eventos, W) {
       it.el.addEventListener("mouseleave", () => { camino.classList.remove("resaltado"); punto.classList.remove("resaltado"); });
     }
   }
+}
+
+// Conos de ampliación: del tramo marcado de cada línea a los extremos de la siguiente.
+function dibujarConos() {
+  const main = $("#lineas");
+  main.querySelector(".conos")?.remove();
+  const base = main.getBoundingClientRect();
+  const capa = svg("svg", { class: "conos", width: main.scrollWidth, height: main.scrollHeight });
+  const defs = svg("defs");
+  capa.append(defs);
+
+  for (let i = 0; i < datos.lineas.length - 1; i++) {
+    const lupa = $(`#linea-${i} .lupa`);
+    const pista = $(`#linea-${i + 1} .pista`);
+    const barra = $(`#linea-${i + 1} .barra`);
+    if (!lupa || !pista || !barra) continue;
+    const a = lupa.getBoundingClientRect();
+    const p = pista.getBoundingClientRect();
+    const b = barra.getBoundingClientRect();
+    const x1 = a.left - base.left, x2 = a.right - base.left, y1 = a.bottom - base.top;
+    const izq = p.left - base.left, der = p.right - base.left, y2 = b.top - base.top;
+    const k = (y2 - y1) * 0.45;
+    const color = datos.lineas[i + 1].color;
+
+    const grad = svg("linearGradient", { id: `cono-${i}`, x1: 0, y1: 0, x2: 0, y2: 1 });
+    grad.append(
+      svg("stop", { offset: 0, "stop-color": color, style: "stop-opacity: var(--cono-arriba)" }),
+      svg("stop", { offset: 1, "stop-color": color, style: "stop-opacity: var(--cono-abajo)" }));
+    defs.append(grad);
+
+    const borde1 = `M${x1},${y1} C${x1},${y1 + k} ${izq},${y2 - k} ${izq},${y2}`;
+    const borde2 = `M${x2},${y1} C${x2},${y1 + k} ${der},${y2 - k} ${der},${y2}`;
+    capa.append(svg("path", {
+      class: "cono-relleno", fill: `url(#cono-${i})`,
+      d: `${borde1} L${der},${y2} C${der},${y2 - k} ${x2},${y1 + k} ${x2},${y1} Z`,
+    }));
+    for (const d of [borde1, borde2]) capa.append(svg("path", { class: "cono-borde", stroke: color, d }));
+  }
+  main.prepend(capa);
 }
 
 function marcasEje(i, W, x) {
