@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timeline</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='8' width='28' height='5' rx='2.5' fill='%239747FF'/%3E%3Crect x='14' y='19' width='16' height='5' rx='2.5' fill='%2314AE5C'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="cabecera-fila">
+      <div class="marca">
+        <h1>Timeline</h1>
+        <span class="lema">Del Big Bang a hoy</span>
+      </div>
+      <div class="buscador">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input id="buscar" type="search" placeholder="Buscar eventos…" autocomplete="off" aria-label="Buscar eventos">
+        <span id="buscar-cuenta" class="buscar-cuenta"></span>
+      </div>
+      <button id="btn-nuevo" class="boton boton-primario" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Añadir evento</span>
+      </button>
+    </div>
+    <nav id="indice" class="indice" aria-label="Líneas"></nav>
+  </header>
+
+  <div id="aviso-servidor" class="aviso-servidor" hidden>
+    Para poder guardar cambios, abre la web con <strong>Abrir Timeline.bat</strong>.
+  </div>
+
+  <main id="lineas"></main>
+
+  <dialog id="detalle" class="dialogo dialogo-detalle">
+    <button class="cerrar" type="button" data-cerrar aria-label="Cerrar">×</button>
+    <div class="detalle-imagen" id="detalle-imagen"></div>
+    <div class="detalle-cuerpo">
+      <div class="detalle-meta">
+        <span class="detalle-linea" id="detalle-linea"></span>
+        <span class="detalle-fecha" id="detalle-fecha"></span>
+      </div>
+      <div id="detalle-texto" class="detalle-texto"></div>
+      <div class="detalle-acciones">
+        <button class="boton" type="button" id="detalle-anterior" aria-label="Evento anterior">←</button>
+        <button class="boton" type="button" id="detalle-siguiente" aria-label="Evento siguiente">→</button>
+        <span class="hueco"></span>
+        <button class="boton" type="button" id="detalle-editar">Editar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="editor" class="dialogo dialogo-editor">
+    <form id="form-editor" method="dialog">
+      <h2 id="editor-titulo">Nuevo evento</h2>
+
+      <fieldset class="campo">
+        <legend>Fecha</legend>
+        <div class="fecha" data-fecha="desde"></div>
+        <label class="casilla"><input type="checkbox" id="es-periodo"> Es un periodo (tiene fecha de fin)</label>
+        <div class="fecha" data-fecha="hasta" hidden></div>
+        <p class="pista-linea" id="pista-linea"></p>
+      </fieldset>
+
+      <label class="campo">
+        <span class="etiqueta">Texto</span>
+        <textarea id="texto" rows="5" required placeholder="Primera línea: el título&#10;Siguientes líneas: la explicación"></textarea>
+        <span class="ayuda">La primera línea se usa como título en la tarjeta.</span>
+      </label>
+
+      <div class="campo">
+        <span class="etiqueta">Imagen</span>
+        <div class="imagen-editor">
+          <div id="imagen-vista" class="imagen-vista"></div>
+          <div class="imagen-botones">
+            <label class="boton">Elegir imagen…<input id="imagen-archivo" type="file" accept="image/*" hidden></label>
+            <button class="boton" type="button" id="imagen-quitar">Quitar</button>
+            <span class="ayuda">También puedes pegarla con Ctrl+V.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-acciones">
+        <button class="boton boton-peligro" type="button" id="editor-borrar">Borrar</button>
+        <span class="hueco"></span>
+        <button class="boton" type="button" data-cerrar>Cancelar</button>
+        <button class="boton boton-primario" type="submit" id="editor-guardar">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/fechas.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
