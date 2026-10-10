@@ -323,13 +323,11 @@ function dibujarConos() {
       svg("stop", { offset: 1, "stop-color": color, style: "stop-opacity: var(--cono-abajo)" }));
     defs.append(grad);
 
-    const borde1 = `M${x1},${y1} C${x1},${y1 + k} ${izq},${y2 - k} ${izq},${y2}`;
-    const borde2 = `M${x2},${y1} C${x2},${y1 + k} ${der},${y2 - k} ${der},${y2}`;
     capa.append(svg("path", {
-      class: "cono-relleno", fill: `url(#cono-${i})`,
-      d: `${borde1} L${der},${y2} C${der},${y2 - k} ${x2},${y1 + k} ${x2},${y1} Z`,
+      fill: `url(#cono-${i})`,
+      d: `M${x1},${y1} C${x1},${y1 + k} ${izq},${y2 - k} ${izq},${y2}` +
+         ` L${der},${y2} C${der},${y2 - k} ${x2},${y1 + k} ${x2},${y1} Z`,
     }));
-    for (const d of [borde1, borde2]) capa.append(svg("path", { class: "cono-borde", stroke: color, d }));
   }
   main.prepend(capa);
 }

@@ -175,23 +175,17 @@ main { padding: 8px 24px 80px; position: relative; }
 .linea { margin-top: 26px; scroll-margin-top: 110px; position: relative; z-index: 1; }
 
 /* Conos de ampliación entre líneas (fondo) */
-:root { --cono-arriba: .16; --cono-abajo: .05; --cono-borde: .35; }
+:root { --cono-arriba: .16; --cono-abajo: .05; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --cono-arriba: .2; --cono-abajo: .06; --cono-borde: .45; }
+  :root:not([data-theme="light"]) { --cono-arriba: .2; --cono-abajo: .06; }
 }
-:root[data-theme="dark"] { --cono-arriba: .2; --cono-abajo: .06; --cono-borde: .45; }
+:root[data-theme="dark"] { --cono-arriba: .2; --cono-abajo: .06; }
 
 .conos {
   position: absolute;
   top: 0; left: 0;
   pointer-events: none;
   z-index: 0;
-}
-.cono-borde {
-  fill: none;
-  stroke-width: 1.5;
-  stroke-dasharray: 5 6;
-  opacity: var(--cono-borde);
 }
 
 .linea-cab {
