@@ -386,7 +386,8 @@ function crearTarjeta(ev) {
     imagenTarjeta(ev),
     h("span", { class: "t-cuerpo" },
       h("span", { class: "t-fecha" }, formatoEvento(ev)),
-      h("span", { class: "t-titulo" }, tituloDe(ev))
+      h("span", { class: "t-titulo" }, tituloDe(ev)),
+      ...ev.texto.split("\n").slice(1).filter(Boolean).map(p => h("span", { class: "t-texto" }, p))
     )
   );
 }

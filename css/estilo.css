@@ -377,13 +377,17 @@ main { padding: 8px 24px 80px; position: relative; }
   margin-bottom: 2px;
 }
 .tarjeta .t-titulo {
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: block;
   font-size: 13px;
   line-height: 1.32;
-  font-weight: 550;
+  font-weight: 600;
+}
+.tarjeta .t-texto {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.38;
+  color: var(--texto-suave);
 }
 
 body.buscando .tarjeta { opacity: .22; }
