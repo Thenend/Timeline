@@ -346,12 +346,26 @@ main { padding: 8px 24px 80px; position: relative; }
   z-index: 5;
   outline: none;
 }
-.tarjeta img {
+.tarjeta .t-imagen {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--superficie-2);
+}
+.tarjeta .t-imagen img {
+  position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  background: var(--superficie-2);
+  height: 100%;
+  object-fit: cover;   /* con la proporción exacta no recorta nada */
+}
+.tarjeta .t-imagen.ajustada img { object-fit: contain; }
+.tarjeta .t-imagen.ajustada::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  background: var(--fondo) center / cover;
+  filter: blur(14px) brightness(.75);
 }
 .tarjeta .t-cuerpo { padding: 7px 10px 9px; }
 .tarjeta .t-fecha {

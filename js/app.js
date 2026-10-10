@@ -8,6 +8,7 @@ const ALTO_EJE = 22;               // espacio para las marcas encima de la barra
 const SEP_BARRA = 34;              // hueco entre la barra y la primera fila de tarjetas
 const SEP_FILA = 16;
 const ANCHO_MINIMO = 960;
+const ALTO_MAX_IMAGEN = 200;
 
 // ---------- Estado ----------
 let datos = null;
@@ -354,12 +355,35 @@ function marcasEje(i, W, x) {
   return marcas;
 }
 
+// La imagen se muestra entera con su proporción; si es muy vertical se limita
+// la altura y los lados se rellenan con la propia imagen difuminada.
+function imagenTarjeta(ev) {
+  if (!ev.imagen) return null;
+  const alto = ANCHO_TARJETA / (ev.proporcionImagen || 1.6);
+  const ajustada = alto > ALTO_MAX_IMAGEN;
+  return h("span", {
+    class: ajustada ? "t-imagen ajustada" : "t-imagen",
+    style: `height:${Math.round(Math.min(alto, ALTO_MAX_IMAGEN))}px;` + (ajustada ? `--fondo:url("${ev.imagen}")` : ""),
+  }, h("img", { src: ev.imagen, alt: "", loading: "lazy" }));
+}
+
+// Por si algún evento tiene imagen pero no su proporción (p. ej. editado a mano).
+async function completarProporciones() {
+  const faltan = datos.eventos.filter(ev => ev.imagen && !ev.proporcionImagen);
+  await Promise.all(faltan.map(ev => new Promise(listo => {
+    const img = new Image();
+    img.onload = () => { ev.proporcionImagen = img.naturalWidth / img.naturalHeight; listo(); };
+    img.onerror = listo;
+    img.src = ev.imagen;
+  })));
+}
+
 function crearTarjeta(ev) {
   return h("button", {
     class: "tarjeta", type: "button", "data-id": ev.id,
     onclick: () => abrirDetalle(ev.id),
   },
-    ev.imagen ? h("img", { src: ev.imagen, alt: "", loading: "lazy" }) : null,
+    imagenTarjeta(ev),
     h("span", { class: "t-cuerpo" },
       h("span", { class: "t-fecha" }, formatoEvento(ev)),
       h("span", { class: "t-titulo" }, tituloDe(ev))
@@ -551,13 +575,17 @@ async function reducirImagen(archivo) {
   ctx.fillRect(0, 0, lienzo.width, lienzo.height);
   ctx.drawImage(bmp, 0, 0, lienzo.width, lienzo.height);
   const blob = await new Promise(ok => lienzo.toBlob(ok, "image/jpeg", 0.85));
-  return { blob, ext: "jpg" };
+  return { blob, ext: "jpg", proporcion: lienzo.width / lienzo.height };
 }
 
 async function subirImagen(archivo) {
-  const { blob, ext } = await reducirImagen(archivo);
+  let { blob, ext, proporcion } = await reducirImagen(archivo);
+  if (!proporcion) {
+    const bmp = await createImageBitmap(archivo);
+    proporcion = bmp.width / bmp.height;
+  }
   const r = await peticion(`/api/imagen?ext=${ext}`, { method: "POST", body: blob });
-  return (await r.json()).ruta;
+  return { ruta: (await r.json()).ruta, proporcion: Math.round(proporcion * 1000) / 1000 };
 }
 
 async function peticion(url, opciones) {
@@ -605,11 +633,13 @@ async function guardarEditor(e) {
   boton.disabled = true;
   try {
     let imagen = editor.imagen;
-    if (editor.archivo) imagen = await subirImagen(editor.archivo);
+    let proporcion = editor.imagen ? editor.evento?.proporcionImagen : null;
+    if (editor.archivo) ({ ruta: imagen, proporcion } = await subirImagen(editor.archivo));
     const ev = { id: editor.evento?.id || nuevoId(), fecha };
     if (hasta) ev.hasta = hasta;
     ev.texto = texto;
     if (imagen) ev.imagen = imagen;
+    if (imagen && proporcion) ev.proporcionImagen = proporcion;
 
     const nuevos = structuredClone(datos);
     const k = nuevos.eventos.findIndex(x => x.id === ev.id);
@@ -708,6 +738,7 @@ async function iniciar() {
   $("#btn-nuevo").hidden = !puedeGuardar;
 
   prepararEditor();
+  await completarProporciones();
   dibujar();
 
   $("#btn-nuevo").addEventListener("click", () => abrirEditor(null));
