@@ -30,3 +30,6 @@ y la ventana negra debe quedar abierta mientras la usas.
 La web está publicada en GitHub Pages (https://thenend.github.io/Timeline/) y se
 actualiza sola con cada push a `main`. Allí es de solo lectura: para editar,
 usa **Abrir Timeline.bat** en tu PC y sube los cambios.
+
+Al cambiar archivos de `css/` o `js/`, sube el número `?v=` de sus enlaces en
+`index.html` para que los navegadores no sigan usando la versión anterior.
