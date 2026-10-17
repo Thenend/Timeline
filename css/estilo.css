@@ -50,6 +50,9 @@
 
 * { box-sizing: border-box; }
 
+/* Que el atributo hidden gane siempre a los display de las clases (p. ej. .boton) */
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; scrollbar-gutter: stable; }
 
 body {
