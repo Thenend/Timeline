@@ -15,7 +15,10 @@ let datos = null;
 let ordenados = [];                // todos los eventos en orden cronológico
 let anchoDibujado = 0;
 let detalleActual = null;
-const puedeGuardar = location.protocol.startsWith("http");
+// Solo se puede editar con el servidor local (Abrir Timeline.bat).
+// Publicada en GitHub Pages la web es de solo lectura.
+const enLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
+const puedeGuardar = enLocal && location.protocol === "http:";
 
 const $ = (sel, el = document) => el.querySelector(sel);
 
@@ -735,7 +738,7 @@ async function iniciar() {
     $("#lineas").replaceChildren(h("p", {}, "No se han podido cargar los datos."));
     return;
   }
-  $("#aviso-servidor").hidden = puedeGuardar;
+  $("#aviso-servidor").hidden = location.protocol !== "file:";
   $("#btn-nuevo").hidden = !puedeGuardar;
 
   prepararEditor();

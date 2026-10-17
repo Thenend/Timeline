@@ -24,3 +24,9 @@ y la ventana negra debe quedar abierta mientras la usas.
 
 `herramientas/importar_imagenes_figma.py` descarga las imágenes que faltan
 (necesita un token personal de Figma en `herramientas/figma_token.txt`).
+
+## Publicación
+
+La web está publicada en GitHub Pages (https://thenend.github.io/Timeline/) y se
+actualiza sola con cada push a `main`. Allí es de solo lectura: para editar,
+usa **Abrir Timeline.bat** en tu PC y sube los cambios.
